@@ -1,0 +1,49 @@
+server_ip = "192.168.56.110"
+agent_ip = "192.168.56.111"
+
+k3s_server_install = <<-SHELL
+    sudo apt-get update
+    sudo apt-get install curl
+    export INSTALL_K3S_EXEC="server --flannel-iface=eth1 --token=12345"
+    curl -sfL https://get.k3s.io | sh -
+    SHELL
+
+k3s_agent_install = <<-SHELL
+    sudo apt-get update
+    sudo apt-get install curl
+    export INSTALL_K3S_EXEC="agent --flannel-iface=eth1 --token=12345"
+    export K3S_URL=https://#{server_ip}:6443
+    curl -sfL https://get.k3s.io | sh -
+    SHELL
+
+Vagrant.configure("2") do |config|
+
+    config.vm.box = "debian/buster64"
+
+    # Server
+    config.vm.define "banthonyS" do |server|
+        server.vm.hostname = "banthonyS"
+        server.vm.network "private_network", ip: server_ip
+
+        server.vm.provider "virtualbox" do |vb|
+            vb.customize ["modifyvm", :id, "--name", "banthonyS"]
+            vb.customize ["modifyvm", :id, "--cpus", "1"]
+            vb.customize ["modifyvm", :id, "--memory", "1024"]
+        end
+        server.vm.provision "shell", inline: k3s_server_install
+    end
+
+    # ServerWorker
+    config.vm.define "banthonySW" do |worker|
+        worker.vm.hostname = "banthonySW"
+        worker.vm.network "private_network", ip: agent_ip
+
+        worker.vm.provider "virtualbox" do |vb|
+            vb.customize ["modifyvm", :id, "--name", "banthonySW"]
+            vb.customize ["modifyvm", :id, "--cpus", "1"]
+            vb.customize ["modifyvm", :id, "--memory", "1024"]
+        end
+        worker.vm.provision "shell", inline: k3s_agent_install
+    end
+
+end

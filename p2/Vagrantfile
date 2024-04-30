@@ -1,0 +1,34 @@
+k3s_server_install = <<-SHELL
+    sudo apt-get update
+    sudo apt-get install curl
+    export INSTALL_K3S_EXEC="server --flannel-iface=eth1 --token=12345"
+    curl -sfL https://get.k3s.io | sh -
+    echo "Wait k3s starting ..."
+    sleep 5
+    sudo kubectl apply -f /home/vagrant/app1.yaml
+    sudo kubectl apply -f /home/vagrant/app2.yaml
+    sudo kubectl apply -f /home/vagrant/app3.yaml
+    sudo kubectl apply -f /home/vagrant/ingress.yaml
+    SHELL
+
+Vagrant.configure("2") do |config|
+
+    config.vm.box = "debian/buster64"
+
+    # Server
+    config.vm.define "banthonyS" do |server|
+        server.vm.hostname = "banthonyS"
+        server.vm.network "private_network", ip: "192.168.56.110"
+
+        server.vm.provider "virtualbox" do |vb|
+            vb.customize ["modifyvm", :id, "--name", "banthonyS"]
+            vb.customize ["modifyvm", :id, "--cpus", "1"]
+            vb.customize ["modifyvm", :id, "--memory", "1024"]
+        end
+        server.vm.provision "shell", inline: k3s_server_install
+    end
+    config.vm.provision "file", source: "./app1.yaml", destination: "/home/vagrant/app1.yaml"
+    config.vm.provision "file", source: "./app2.yaml", destination: "/home/vagrant/app2.yaml"
+    config.vm.provision "file", source: "./app3.yaml", destination: "/home/vagrant/app3.yaml"
+    config.vm.provision "file", source: "./ingress.yaml", destination: "/home/vagrant/ingress.yaml"
+end
