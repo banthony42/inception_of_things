@@ -53,8 +53,9 @@ sudo kubectl config set-context --current --namespace=argocd
 
 sudo argocd app create wil-playground --repo https://github.com/banthony42/inception_of_things.git --path p3/config --dest-server https://kubernetes.default.svc --dest-namespace dev
 
+sudo argocd app set wil-playground --sync-policy automated --auto-prune
+sudo argocd app set wil-playground --auto-prune
+
 sudo kubectl create namespace dev
 
 sudo argocd app sync wil-playground
-
-sudo argocd app set wil-playground --sync-policy automated --auto-prune

@@ -18,7 +18,7 @@ spec:
       - name: wil-playground
         image: wil42/playground:v2
         ports:
-          - containerPort: 8888
+          - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -30,5 +30,5 @@ spec:
     app: wil-playround
   ports:
     - protocol: TCP
-      port: 8888
-      targetPort: 8888
+      port: 8080
+      targetPort: 8080
