@@ -32,3 +32,20 @@ k3d cluster create p3-cluster
 # Install ArgoCD
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Install ArgoCD CLI
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64
+
+# Update ArgoCD service to LoadBalancer to access UI 
+# kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+
+# Expose ArgoCD port server, access through https://localhost:8080
+# kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+sudo argocd login --core
+
+sudo kubectl config set-context --current --namespace=argocd
+
+sudo argocd app create wil-playground --repo https://github.com/banthony42/inception_of_things.git --path p3/config --dest-server https://kubernetes.default.svc --dest-namespace dev
