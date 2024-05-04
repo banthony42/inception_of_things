@@ -57,4 +57,4 @@ sudo kubectl create namespace dev
 
 sudo argocd app sync wil-playground
 
-argocd app set wil-playground --sync-policy automated --auto-prune
+sudo argocd app set wil-playground --sync-policy automated --auto-prune
