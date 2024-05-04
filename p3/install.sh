@@ -27,11 +27,13 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
 # Create new cluster
-k3d cluster create p3-cluster
+sudo k3d cluster create p3-cluster --api-port 6443 -p 8080:80@loadbalancer --agents 2
 
 # Install ArgoCD
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+sudo kubectl create namespace argocd
+sudo kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+sudo kubectl wait --for=condition=Ready pods --all -n argocd
 
 # Install ArgoCD CLI
 curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
@@ -47,6 +49,8 @@ rm argocd-linux-amd64
 echo "Waiting for cluster to be ready ..."
 sleep 20
 
+# sudo kubectl apply -f ingress.yaml -n argocd
+
 sudo argocd login --core
 
 sudo kubectl config set-context --current --namespace=argocd
@@ -59,3 +63,9 @@ sudo argocd app set wil-playground --auto-prune
 sudo kubectl create namespace dev
 
 sudo argocd app sync wil-playground
+
+sudo kubectl port-forward svc/argocd-server --address 192.168.56.110 -n argocd 8081:80 2>&1 >/dev/null &
+sudo kubectl port-forward svc/wil-playground-service -n dev 8888:8888 2>&1 >/dev/null &
+
+# Get ArgoCD password :
+# sudo kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
