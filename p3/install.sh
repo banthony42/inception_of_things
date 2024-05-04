@@ -56,3 +56,5 @@ sudo argocd app create wil-playground --repo https://github.com/banthony42/incep
 sudo kubectl create namespace dev
 
 sudo argocd app sync wil-playground
+
+argocd app set wil-playground --sync-policy automated --auto-prune

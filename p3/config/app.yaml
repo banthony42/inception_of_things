@@ -25,6 +25,7 @@ kind: Service
 metadata:
   name: wil-playground-service
 spec:
+  type: LoadBalancer
   selector:
     app: wil-playround
   ports:
