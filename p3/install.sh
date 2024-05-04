@@ -40,16 +40,8 @@ curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/lat
 sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 rm argocd-linux-amd64
 
-# Update ArgoCD service to LoadBalancer to access UI 
-# kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-
-# Expose ArgoCD port server, access through https://localhost:8080
-# kubectl port-forward svc/argocd-server -n argocd 8080:443
-
 echo "Waiting for cluster to be ready ..."
 sleep 20
-
-# sudo kubectl apply -f ingress.yaml -n argocd
 
 sudo argocd login --core
 
@@ -57,14 +49,13 @@ sudo kubectl config set-context --current --namespace=argocd
 
 sudo argocd app create wil-playground --repo https://github.com/banthony42/inception_of_things.git --path p3/config --dest-server https://kubernetes.default.svc --dest-namespace dev
 
-sudo argocd app set wil-playground --sync-policy automated --auto-prune
-sudo argocd app set wil-playground --auto-prune
+sudo argocd app set wil-playground --sync-policy automated --self-heal
 
 sudo kubectl create namespace dev
 
 sudo argocd app sync wil-playground
 
-sudo kubectl port-forward svc/argocd-server --address 192.168.56.110 -n argocd 8081:80 2>&1 >/dev/null &
+sudo kubectl port-forward svc/argocd-server --address 192.168.56.110 -n argocd 8080:80 2>&1 >/dev/null &
 sudo kubectl port-forward svc/wil-playground-service -n dev 8888:8888 2>&1 >/dev/null &
 
 # Get ArgoCD password :
