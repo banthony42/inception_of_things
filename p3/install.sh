@@ -44,8 +44,15 @@ rm argocd-linux-amd64
 # Expose ArgoCD port server, access through https://localhost:8080
 # kubectl port-forward svc/argocd-server -n argocd 8080:443
 
+echo "Waiting for cluster to be ready ..."
+sleep 20
+
 sudo argocd login --core
 
 sudo kubectl config set-context --current --namespace=argocd
 
 sudo argocd app create wil-playground --repo https://github.com/banthony42/inception_of_things.git --path p3/config --dest-server https://kubernetes.default.svc --dest-namespace dev
+
+sudo kubectl create namespace dev
+
+sudo argocd app sync wil-playground
