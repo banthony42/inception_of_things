@@ -55,7 +55,7 @@ sudo kubectl create namespace dev
 
 sudo argocd app sync wil-playground
 
-sudo kubectl port-forward svc/argocd-server --address 192.168.56.110 -n argocd 8080:80 2>&1 >/dev/null &
+sudo kubectl port-forward svc/argocd-server --address 192.168.56.110 -n argocd 8081:80 2>&1 >/dev/null &
 sudo kubectl port-forward svc/wil-playground-service -n dev 8888:8888 2>&1 >/dev/null &
 
 # Get ArgoCD password :
