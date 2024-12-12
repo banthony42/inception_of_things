@@ -14,8 +14,8 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 # Add the repository to Apt sources:
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
+  sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 sudo apt-get update
 
 # Install docker
@@ -57,11 +57,39 @@ kubectl -n argocd patch secret argocd-secret \
     "admin.passwordMtime": "'$(date +%FT%T%Z)'"
   }}'
 
+#######################
+# Gitlab Prerequisite #
+#######################
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
 
+# PostgreSQL, Redis, Gitaly
+# Ignore theses prerequisite since each of these components are present for trial in Gitlab chart.
 
-# Install Gitlab
+# Secrets
+# Keep auto-generated secret for now
+
+############################
+# Gitlab install with Helm #
+############################
+
+# Doc : https://docs.gitlab.com/charts/development/minikube/#deploying-gitlab-with-minimal-settings
+
 sudo kubectl create namespace gitlab
 
+sudo helm repo add gitlab https://charts.gitlab.io/
+sudo helm repo update
+sudo helm upgrade --install gitlab gitlab/gitlab \
+  -n gitlab \
+  -f https://gitlab.com/gitlab-org/charts/gitlab/raw/master/examples/values-minikube-minimum.yaml \
+  --timeout 600s \
+  --set global.hosts.domain=192.168.56.110.nip.io \
+  --set global.hosts.externalIP=192.168.56.110
+
+sudo kubectl wait --for=condition=Ready pods --all --timeout=120s -n gitlab
+
+sudo kubectl port-forward svc/gitlab-webservice-default --address 192.168.56.110 -n gitlab 8081:80 2>&1 >/dev/null &
 
 ###########
 ###########
