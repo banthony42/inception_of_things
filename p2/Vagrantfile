@@ -27,8 +27,8 @@ Vagrant.configure("2") do |config|
         end
         server.vm.provision "shell", inline: k3s_server_install
     end
-    config.vm.provision "file", source: "./app1.yaml", destination: "/home/vagrant/app1.yaml"
-    config.vm.provision "file", source: "./app2.yaml", destination: "/home/vagrant/app2.yaml"
-    config.vm.provision "file", source: "./app3.yaml", destination: "/home/vagrant/app3.yaml"
-    config.vm.provision "file", source: "./ingress.yaml", destination: "/home/vagrant/ingress.yaml"
+    config.vm.provision "file", source: "./confs/app1.yaml", destination: "/home/vagrant/app1.yaml"
+    config.vm.provision "file", source: "./confs/app2.yaml", destination: "/home/vagrant/app2.yaml"
+    config.vm.provision "file", source: "./confs/app3.yaml", destination: "/home/vagrant/app3.yaml"
+    config.vm.provision "file", source: "./confs/ingress.yaml", destination: "/home/vagrant/ingress.yaml"
 end

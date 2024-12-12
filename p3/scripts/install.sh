@@ -62,7 +62,7 @@ sudo argocd login --core
 
 sudo kubectl config set-context --current --namespace=argocd
 
-sudo argocd app create wil-playground --repo https://github.com/banthony42/inception_of_things.git --path p3/config --dest-server https://kubernetes.default.svc --dest-namespace dev
+sudo argocd app create wil-playground --repo https://github.com/banthony42/inception_of_things.git --path p3/confs --dest-server https://kubernetes.default.svc --dest-namespace dev
 
 # Setup the app to automatically update the deployment according to github repo HEAD
 sudo argocd app set wil-playground --sync-policy automated --self-heal
