@@ -14,8 +14,8 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 # Add the repository to Apt sources:
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
+  sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 sudo apt-get update
 
 # Install docker
@@ -53,7 +53,7 @@ rm argocd-linux-amd64
 # https://argo-cd.readthedocs.io/en/stable/faq/#i-forgot-the-admin-password-how-do-i-reset-it
 kubectl -n argocd patch secret argocd-secret \
   -p '{"stringData": {
-    "admin.password": "$2a$10$ywZgQhdK.iA1DC3krGcwwejpBkb9cctzs9eOy0to3Yp1mUhnmDet2",
+    "admin.password": "$2a$10$Ql1.T6pVWAcRlgeXe22N5.cpD0xLD62Ul5Kn5nObCgB9vv4of.vj.",
     "admin.passwordMtime": "'$(date +%FT%T%Z)'"
   }}'
 

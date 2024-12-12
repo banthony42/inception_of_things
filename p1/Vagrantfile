@@ -3,14 +3,14 @@ agent_ip = "192.168.56.111"
 
 k3s_server_install = <<-SHELL
     sudo apt-get update
-    sudo apt-get install curl
+    sudo apt-get install -y curl
     export INSTALL_K3S_EXEC="server --flannel-iface=eth1 --token=12345"
     curl -sfL https://get.k3s.io | sh -
     SHELL
 
 k3s_agent_install = <<-SHELL
     sudo apt-get update
-    sudo apt-get install curl
+    sudo apt-get install -y curl
     export INSTALL_K3S_EXEC="agent --flannel-iface=eth1 --token=12345"
     export K3S_URL=https://#{server_ip}:6443
     curl -sfL https://get.k3s.io | sh -
@@ -18,7 +18,7 @@ k3s_agent_install = <<-SHELL
 
 Vagrant.configure("2") do |config|
 
-    config.vm.box = "debian/buster64"
+    config.vm.box = "debian/bookworm64"
 
     # Server
     config.vm.define "banthonyS" do |server|
